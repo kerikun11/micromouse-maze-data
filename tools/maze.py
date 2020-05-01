@@ -163,12 +163,13 @@ class Maze:
 # example
 
 if __name__ == "__main__":
-    # default filepath for debug
-    filepath = './mazedata/32MM2019HX.maze'
+    # count argument
+    if len(sys.argv) < 2:
+        print('please specify a maze file.')
+        sys.exit(1)
 
-    # overwrite with commandline argument
-    if len(sys.argv) > 1:
-        filepath = sys.argv[1]
+    # set filepath
+    filepath = sys.argv[1]
 
     # read maze file
     with open(filepath, 'r') as file:
