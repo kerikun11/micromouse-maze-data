@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# description: edit maze file
+# usage: $ python maze_editor.py mazefile.maze
 # python version >= 3.8
-# usage: $ python maze.py mazefile.maze
 # ============================================================================ #
 import os
 import sys
@@ -12,7 +13,7 @@ import matplotlib.pyplot as plt
 from maze import Maze  # calls ./maze.py
 
 
-class MazePainter:
+class MazeEditor:
     """
     paint a maze with matplotlib.pyplot
     """
@@ -71,7 +72,7 @@ class MazePainter:
         w = not maze.wall(x, y, d)
         c = 'r' if w else 'r:'
         maze.wall(x, y, d, w, new_known=True)
-        MazePainter.draw_wall(maze, x, y, d, c)
+        MazeEditor.draw_wall(maze, x, y, d, c)
         plt.draw()
         print(maze.generate_maze_string())
 
@@ -97,8 +98,8 @@ if __name__ == "__main__":
     # prepare figure
     fig = plt.figure(figsize=(10, 10))
 
-    # setup maze modifier
-    mp = MazePainter(maze)
+    # setup maze editor
+    mp = MazeEditor(maze)
     mp.draw_maze()
     mp.attach_wall_toggle()
 

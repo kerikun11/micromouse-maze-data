@@ -48,7 +48,7 @@
 
 --------------------------------------------------------------------------------
 
-## 編集
+## 迷路の編集
 
 迷路を編集したいときは，
 テキストファイルを直接書き換えてもよいが，
@@ -69,7 +69,8 @@ git clone https://github.com/kerikun11/micromouse-mazedata.git
 # change the directory
 cd micromouse-mazedata
 # run the application
-python3 tools/mazepainter.py data/32MM2019HX.maze
+python3 tools/maze_editor.py data/32MM2019HX.maze
+# exit app to save maze at ./output directory
 ```
 
 壁をクリックすると，有無を切り替えることができる．

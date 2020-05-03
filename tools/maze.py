@@ -19,20 +19,28 @@ class Maze:
         construct a maze object with a maze size
         """
         self.size = size  # number of cells on one side of the maze
-        self.index_size = size * size * 2  # the number of walls to save: x * y * z
-        self.walls = np.zeros(self.index_size, dtype=bool)  # wall flags
-        self.knowns = np.zeros(self.index_size, dtype=bool)  # wall flags
+        # the number of cells in the maze
+        self.cell_index_size = size * size
+        # the number of walls to save: x * y * z
+        self.wall_index_size = size * size * 2
+        # wall data
+        self.walls = np.zeros(self.wall_index_size, dtype=bool)  # wall flags
+        self.knowns = np.zeros(self.wall_index_size, dtype=bool)  # wall flags
+        # start and goal cells
         self.start = []
         self.goals = []
 
     @staticmethod
     def parse(file):
         """
-        parse maze string and construct maze object
+        parse maze string and construct a maze object
         """
         lines = file.readlines()
         maze = Maze(len(lines)//2)  # get maze size
         for i, line in enumerate(reversed(lines)):
+            # skip if comment line
+            if line.startswith('#'):
+                continue
             line = line.rstrip()  # remove \n
             # +---+---+
             if i % 2 == 0:
@@ -70,20 +78,32 @@ class Maze:
             x, y, z, d = x, y-1, 1, cls.North
         return x, y, z, d
 
-    def index(self, x, y, z):
+    def get_index(self, x, y, z=None):
         """
-        get a unique id of a wall inside of the maze
+        get a unique id of a wall or cell inside of the maze
         """
-        if not self.is_inside_of_field(x, y, z):
-            raise ValueError("out of field!")
-        return z * self.size * self.size + y * self.size + x
+        if z == None:
+            # cell
+            if not self.is_inside_of_field(x, y):
+                raise ValueError("out of field!")
+            return y * self.size + x
+        else:
+            # wall
+            if not self.is_inside_of_field(x, y, z):
+                raise ValueError("out of field!")
+            return z * self.size * self.size + y * self.size + x
 
-    def is_inside_of_field(self, x, y, z):
+    def is_inside_of_field(self, x, y, z=None):
         """
-        determine if the wall is inside of the field
+        determine if the wall or cell is inside of the field
         """
         s = self.size
-        return x >= 0 and y >= 0 and x < s+z-1 and y < s-z
+        if z == None:
+            # cell
+            return x >= 0 and y >= 0 and x < s and y < s
+        else:
+            # wall
+            return x >= 0 and y >= 0 and x < s+z-1 and y < s-z
 
     def wall(self, x, y, d, new_state=None, new_known=None):
         """
@@ -92,7 +112,7 @@ class Maze:
         x, y, z, d = self.uniquify(x, y, d)
         if not self.is_inside_of_field(x, y, z):
             return True
-        i = self.index(x, y, z)
+        i = self.get_index(x, y, z)
         if new_state != None:
             self.walls[i] = new_state
         if new_known != None:
@@ -106,7 +126,7 @@ class Maze:
         x, y, z, d = self.uniquify(x, y, d)
         if not self.is_inside_of_field(x, y, z):
             return True
-        i = self.index(x, y, z)
+        i = self.get_index(x, y, z)
         if update != None:
             self.knowns[i] = update
         return self.knowns[i]
@@ -158,10 +178,50 @@ class Maze:
             res += '\n'
         return res
 
+    def get_cost_map(self, roots=None):
+        """
+        calculate cost map of cells using breadth first search
+        """
+        roots = roots if roots else self.goals
+        # initialize
+        cost_map = [np.inf] * self.cell_index_size
+        open_list = []
+        for x, y in roots:
+            cost_map[self.get_index(x, y)] = 0
+            open_list.append([x, y])
+        # breadth first search
+        while open_list:
+            x, y = open_list.pop(0)
+            i = self.get_index(x, y)
+            c = cost_map[i]
+            # update neighbors
+            for nx, ny, nd in [
+                [x+1, y, Maze.East],
+                [x, y+1, Maze.North],
+                [x-1, y, Maze.West],
+                [x, y-1, Maze.South],
+            ]:
+                # see if the next cell can be visited
+                if not self.is_inside_of_field(nx, ny) or self.wall(x, y, nd):
+                    continue
+                ni = self.get_index(nx, ny)
+                nc = cost_map[ni]
+                if nc < c + 1:
+                    continue
+                cost_map[ni] = c + 1
+                open_list.append([nx, ny])
+        return cost_map
+
+    def print_cost_map(self, cost_map, file=sys.stdout):
+        for y in reversed(range(self.size)):
+            for x in range(self.size):
+                c = cost_map[self.get_index(x, y)]
+                print(f'{c:>4}', end="", file=file)
+            print(file=file)
+
 
 # ============================================================================ #
 # example
-
 if __name__ == "__main__":
     # count argument
     if len(sys.argv) < 2:
@@ -174,5 +234,10 @@ if __name__ == "__main__":
     # read maze file
     with open(filepath, 'r') as file:
         maze = Maze.parse(file)
+
+    # show info
     print(maze)
     print(maze.generate_maze_string())
+
+    # show cost map
+    maze.print_cost_map(maze.get_cost_map())
