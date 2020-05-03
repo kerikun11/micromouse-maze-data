@@ -74,7 +74,7 @@ class MazeEditor:
         maze.wall(x, y, d, w, new_known=True)
         MazeEditor.draw_wall(maze, x, y, d, c)
         plt.draw()
-        print(maze.generate_maze_string())
+        print(maze.get_maze_string())
 
 
 # ============================================================================ #
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     with open(filepath, 'r') as file:
         maze = Maze.parse(file)
     print(maze)
-    print(maze.generate_maze_string())
+    print(maze.get_maze_string())
 
     # prepare figure
     fig = plt.figure(figsize=(10, 10))
@@ -112,5 +112,5 @@ if __name__ == "__main__":
     basename_without_ext = os.path.splitext(os.path.basename(filepath))[0]
     output_filepath = f'./output/{basename_without_ext}-{datetime_string}.maze'
     with open(output_filepath, 'w') as file:
-        file.write(maze.generate_maze_string())
+        file.write(maze.get_maze_string())
         print('modified maze data saved: ' + output_filepath)

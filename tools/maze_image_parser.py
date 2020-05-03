@@ -12,6 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from maze import Maze  # calls ./maze.py
+from maze_step_map import StepMap  # calls ./maze_step_map.py
 
 
 def show(img):
@@ -104,13 +105,17 @@ def get_maze_from_img(filepath, maze_size=None):
         for y in range(maze_size-1):
             w = img[y_indexes[y+1], x_indexes[x]+x_width//2]
             maze.wall(x, y, Maze.North, new_state=w, new_known=True)
-    # ゴールを探す; 幅優先探索で壁のない柱のあるマスをゴールとする
+    # スタート区画を設定
     maze.start.append([0, 0])
-    cost_map = maze.get_cost_map(maze.start)
+    # ゴール区画を設定; ここでは幅優先探索で壁のない柱のあるマスをゴールとする
+    step_map = StepMap(maze)
+    step_map.update(maze.start)
     for x in range(maze.size):
         for y in range(maze.size):
-            if not maze.is_inside_of_field(x, y) or not np.isfinite(cost_map[maze.get_index(x, y)]):
+            if not maze.is_inside_of_field(x, y) \
+                    or not np.isfinite(step_map[maze.get_cell_index(x, y)]):
                 continue
+            # 柱のまわりの4マスを列挙
             around_pillar = [
                 [x, y, Maze.East],
                 [x+1, y, Maze.North],
@@ -142,7 +147,7 @@ if __name__ == "__main__":
     maze = get_maze_from_img(filepath)
 
     # 表示
-    print(maze.generate_maze_string())
+    print(maze.get_maze_string())
     print(maze)
 
     # save maze
@@ -151,5 +156,5 @@ if __name__ == "__main__":
     basename_without_ext = os.path.splitext(os.path.basename(filepath))[0]
     output_filepath = f'./output/{basename_without_ext}-{datetime_string}.maze'
     with open(output_filepath, 'w') as file:
-        file.write(maze.generate_maze_string())
-        print('modified maze data saved: ' + output_filepath)
+        file.write(maze.get_maze_string())
+        print('maze data saved: ' + output_filepath)

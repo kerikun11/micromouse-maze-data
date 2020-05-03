@@ -23,12 +23,87 @@ class Maze:
         self.cell_index_size = size * size
         # the number of walls to save: x * y * z
         self.wall_index_size = size * size * 2
-        # wall data
-        self.walls = np.zeros(self.wall_index_size, dtype=bool)  # wall flags
-        self.knowns = np.zeros(self.wall_index_size, dtype=bool)  # wall flags
+        # wall data; wall states and known flags
+        self.walls = np.zeros(self.wall_index_size, dtype=bool)
+        self.knowns = np.zeros(self.wall_index_size, dtype=bool)
         # start and goal cells
         self.start = []
         self.goals = []
+
+    @classmethod
+    def uniquify(cls, x, y, d):
+        """
+        returns a unique coordinates of a wall without redundancy on both sides of the wall
+        """
+        if d == cls.East:
+            x, y, z, d = x, y, 0, cls.East
+        elif d == cls.North:
+            x, y, z, d = x, y, 1, cls.North
+        elif d == cls.West:
+            x, y, z, d = x-1, y, 0, cls.East
+        elif d == cls.South:
+            x, y, z, d = x, y-1, 1, cls.North
+        return x, y, z, d
+
+    def get_wall_index(self, x, y, z):
+        """
+        get a unique and sequential index of a wall inside of the maze
+        """
+        if not self.is_inside_of_field(x, y, z):
+            raise ValueError("out of field!")
+        return z * self.size * self.size + y * self.size + x
+
+    def get_cell_index(self, x, y):
+        """
+        get a unique and sequential index of a cell inside of the maze
+        """
+        if not self.is_inside_of_field(x, y):
+            raise ValueError("out of field!")
+        return y * self.size + x
+
+    def is_inside_of_field(self, x, y, z=None):
+        """
+        determine if the wall or cell is inside of the field
+        """
+        s = self.size
+        if z == None:
+            return x >= 0 and y >= 0 and x < s and y < s  # cell
+        else:
+            return x >= 0 and y >= 0 and x < s+z-1 and y < s-z  # wall
+
+    def wall(self, x, y, d, new_state=None, new_known=None):
+        """
+        get wall or update wall, and optionally update known flag
+        """
+        x, y, z, d = self.uniquify(x, y, d)
+        if not self.is_inside_of_field(x, y, z):
+            return True
+        i = self.get_wall_index(x, y, z)
+        if new_state != None:
+            self.walls[i] = new_state
+        if new_known != None:
+            self.knowns[i] = new_known
+        return self.walls[i]
+
+    def known(self, x, y, d, update=None):
+        """
+        get or update if the wall is known
+        """
+        x, y, z, d = self.uniquify(x, y, d)
+        if not self.is_inside_of_field(x, y, z):
+            return True
+        i = self.get_wall_index(x, y, z)
+        if update != None:
+            self.knowns[i] = update
+        return self.knowns[i]
+
+    def __str__(self):
+        """
+        show information of the maze
+        """
+        return f'size: {self.size}x{self.size}' + '\n' + \
+            'start: ' + ', '.join([f'({x}, {y})' for x, y in self.start]) + '\n' + \
+            'goals: ' + ', '.join([f'({x}, {y})' for x, y in self.goals])
 
     @staticmethod
     def parse(file):
@@ -36,7 +111,7 @@ class Maze:
         parse maze string and construct a maze object
         """
         lines = file.readlines()
-        maze = Maze(len(lines)//2)  # get maze size
+        maze = Maze(max(len(lines)//2, len(lines[0])//4))  # set maze size
         for i, line in enumerate(reversed(lines)):
             # skip if comment line
             if line.startswith('#'):
@@ -63,161 +138,45 @@ class Maze:
                         maze.goals.append([j, i//2])
         return maze
 
-    @classmethod
-    def uniquify(cls, x, y, d):
-        """
-        returns a unique coordinates of a wall without redundancy on both sides of the wall
-        """
-        if d == cls.East:
-            x, y, z, d = x, y, 0, cls.East
-        elif d == cls.North:
-            x, y, z, d = x, y, 1, cls.North
-        elif d == cls.West:
-            x, y, z, d = x-1, y, 0, cls.East
-        elif d == cls.South:
-            x, y, z, d = x, y-1, 1, cls.North
-        return x, y, z, d
-
-    def get_index(self, x, y, z=None):
-        """
-        get a unique id of a wall or cell inside of the maze
-        """
-        if z == None:
-            # cell
-            if not self.is_inside_of_field(x, y):
-                raise ValueError("out of field!")
-            return y * self.size + x
-        else:
-            # wall
-            if not self.is_inside_of_field(x, y, z):
-                raise ValueError("out of field!")
-            return z * self.size * self.size + y * self.size + x
-
-    def is_inside_of_field(self, x, y, z=None):
-        """
-        determine if the wall or cell is inside of the field
-        """
-        s = self.size
-        if z == None:
-            # cell
-            return x >= 0 and y >= 0 and x < s and y < s
-        else:
-            # wall
-            return x >= 0 and y >= 0 and x < s+z-1 and y < s-z
-
-    def wall(self, x, y, d, new_state=None, new_known=None):
-        """
-        get wall or update wall, and optionally update known flag
-        """
-        x, y, z, d = self.uniquify(x, y, d)
-        if not self.is_inside_of_field(x, y, z):
-            return True
-        i = self.get_index(x, y, z)
-        if new_state != None:
-            self.walls[i] = new_state
-        if new_known != None:
-            self.knowns[i] = new_known
-        return self.walls[i]
-
-    def known(self, x, y, d, update=None):
-        """
-        get or update if the wall is known
-        """
-        x, y, z, d = self.uniquify(x, y, d)
-        if not self.is_inside_of_field(x, y, z):
-            return True
-        i = self.get_index(x, y, z)
-        if update != None:
-            self.knowns[i] = update
-        return self.knowns[i]
-
-    def __str__(self):
-        """
-        show information of the maze
-        """
-        return f'size: {self.size}x{self.size}' + '\n' + \
-            'start: ' + ', '.join([f'({x}, {y})' for x, y in self.start]) + '\n' + \
-            'goals: ' + ', '.join([f'({x}, {y})' for x, y in self.goals])
-
-    def generate_maze_string(self):
+    def get_maze_string(self):
         """
         generate a string to be saved in text format
         """
-        res = ''
+        res = ''  # result string
         for y in reversed(range(-1, self.size)):
-            # +---+---+
-            res += '+'
+            # +---+---+---+---+
+            res += '+'  # first pillar
             for x in range(self.size):
-                d = Maze.North
-                if not self.known(x, y, d):
+                # horizontal wall
+                if not self.known(x, y, Maze.North):
                     res += ' . '
-                elif self.wall(x, y, d):
+                elif self.wall(x, y, Maze.North):
                     res += '---'
                 else:
                     res += '   '
-                res += '+'
+                res += '+'  # pillar
             res += '\n'
-            # |   |   |
+            # |   |   | G |   |
             if y == -1:
                 break
-            res += '|'
+            res += '|'  # first wall
             for x in range(self.size):
+                # cell space
                 if [x, y] in self.start:
                     res += ' S '
                 elif [x, y] in self.goals:
                     res += ' G '
                 else:
                     res += '   '
-                d = Maze.East
-                if not self.known(x, y, d):
+                # vertical wall
+                if not self.known(x, y, Maze.East):
                     res += '.'
-                elif self.wall(x, y, d):
+                elif self.wall(x, y, Maze.East):
                     res += '|'
                 else:
                     res += ' '
             res += '\n'
         return res
-
-    def get_cost_map(self, roots=None):
-        """
-        calculate cost map of cells using breadth first search
-        """
-        roots = roots if roots else self.goals
-        # initialize
-        cost_map = [np.inf] * self.cell_index_size
-        open_list = []
-        for x, y in roots:
-            cost_map[self.get_index(x, y)] = 0
-            open_list.append([x, y])
-        # breadth first search
-        while open_list:
-            x, y = open_list.pop(0)
-            i = self.get_index(x, y)
-            c = cost_map[i]
-            # update neighbors
-            for nx, ny, nd in [
-                [x+1, y, Maze.East],
-                [x, y+1, Maze.North],
-                [x-1, y, Maze.West],
-                [x, y-1, Maze.South],
-            ]:
-                # see if the next cell can be visited
-                if not self.is_inside_of_field(nx, ny) or self.wall(x, y, nd):
-                    continue
-                ni = self.get_index(nx, ny)
-                nc = cost_map[ni]
-                if nc < c + 1:
-                    continue
-                cost_map[ni] = c + 1
-                open_list.append([nx, ny])
-        return cost_map
-
-    def print_cost_map(self, cost_map, file=sys.stdout):
-        for y in reversed(range(self.size)):
-            for x in range(self.size):
-                c = cost_map[self.get_index(x, y)]
-                print(f'{c:>4}', end="", file=file)
-            print(file=file)
 
 
 # ============================================================================ #
@@ -237,7 +196,4 @@ if __name__ == "__main__":
 
     # show info
     print(maze)
-    print(maze.generate_maze_string())
-
-    # show cost map
-    maze.print_cost_map(maze.get_cost_map())
+    print(maze.get_maze_string())
