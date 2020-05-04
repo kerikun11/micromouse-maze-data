@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# ============================================================================ #
+# author: Ryotaro Onuki (kerikun11+github@gmail.com)
+# description: a step map of a maze
+# usage: $ python maze_step_map.py mazefile.maze
 # python version >= 3.8
 # ============================================================================ #
 import sys
@@ -75,7 +79,7 @@ class StepMap:
 # ============================================================================ #
 # example
 if __name__ == "__main__":
-    # count argument
+    # check arguments
     if len(sys.argv) < 2:
         print('please specify a maze file.')
         sys.exit(1)
@@ -85,7 +89,7 @@ if __name__ == "__main__":
 
     # read maze file
     with open(filepath, 'r') as file:
-        maze = Maze.parse(file)
+        maze = Maze.parse_maze_string(file)
 
     # show info
     print(maze)

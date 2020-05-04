@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# description: edit maze file
+# ============================================================================ #
+# author: Ryotaro Onuki (kerikun11+github@gmail.com)
+# description: a tool to edit maze file
 # usage: $ python maze_editor.py mazefile.maze
 # python version >= 3.8
 # ============================================================================ #
@@ -15,14 +17,18 @@ from maze import Maze  # calls ./maze.py
 
 class MazeEditor:
     """
-    paint a maze with matplotlib.pyplot
+    A tool to draw a maze so that you can edit the wall by clicking on it.
     """
 
     def __init__(self, maze):
-        self.maze = maze
+        """
+        construct a maze editor object with a maze object
+        """
+        self.maze = maze  # maze object
 
     def draw_maze(self):
         maze = self.maze
+        # print walls
         for i in range(maze.size+1):
             for j in range(maze.size):
                 # +---+---+
@@ -35,6 +41,7 @@ class MazeEditor:
                     self.draw_wall(maze, j, i, Maze.West)
                 else:
                     self.draw_wall(maze, j, i, Maze.West, ':', color='gray')
+        # print start and goal character
         for ps, t in [[maze.start, 'S'], [maze.goals, 'G']]:
             for p in ps:
                 plt.text(p[0], p[1], t, ha='center', va='center')
@@ -52,9 +59,9 @@ class MazeEditor:
             x, y = [x+1/2, x+1/2], [y-1/2, y+1/2]
         else:
             x, y = [x-1/2, x+1/2], [y+1/2, y+1/2]
-        plt.plot(x, y, 'w', lw=2)
-        plt.plot(x, y, fmt, **kwargs)
-        plt.plot(x, y, 'k.')
+        plt.plot(x, y, 'w', lw=2)  # erase wall
+        plt.plot(x, y, fmt, **kwargs)  # draw new wall
+        plt.plot(x, y, 'k.')  # draw pillars
 
     def attach_wall_toggle(self):
         plt.connect('button_press_event', self.button_press_event)
@@ -79,9 +86,8 @@ class MazeEditor:
 
 # ============================================================================ #
 # example
-
 if __name__ == "__main__":
-    # count argument
+    # check arguments
     if len(sys.argv) < 2:
         print('please specify a maze file.')
         sys.exit(1)
@@ -91,12 +97,13 @@ if __name__ == "__main__":
 
     # read maze file
     with open(filepath, 'r') as file:
-        maze = Maze.parse(file)
+        maze = Maze.parse_maze_string(file)
     print(maze)
     print(maze.get_maze_string())
 
     # prepare figure
-    fig = plt.figure(figsize=(10, 10))
+    figsize = maze.size / 2
+    fig = plt.figure(figsize=(figsize, figsize))
 
     # setup maze editor
     mp = MazeEditor(maze)

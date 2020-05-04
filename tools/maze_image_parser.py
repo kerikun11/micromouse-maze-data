@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# description: parse maze image and generate maze object
-# usage: $ python maze.py mazefile.maze
+# ============================================================================ #
+# author: Ryotaro Onuki (kerikun11+github@gmail.com)
+# description: a tool to parse maze image and generate maze object
+# usage: $ python maze_image_parser.py maze_image.png
 # python version >= 3.8
 # ============================================================================ #
 import os
@@ -135,7 +137,7 @@ def get_maze_from_img(filepath, maze_size=None):
 
 
 if __name__ == "__main__":
-    # count argument
+    # check arguments
     if len(sys.argv) < 2:
         print('please specify a maze image file.')
         sys.exit(1)
