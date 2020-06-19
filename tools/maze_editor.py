@@ -45,7 +45,7 @@ class MazeEditor:
         for ps, t in [[maze.start, 'S'], [maze.goals, 'G']]:
             for p in ps:
                 plt.text(p[0], p[1], t, ha='center', va='center')
-        plt.axes().set_aspect('equal')  # set the x and y axes to the same scale
+        plt.gca().set_aspect('equal')  # set the x and y axes to the same scale
         plt.xticks(range(0, maze.size+1, 1))
         plt.yticks(range(0, maze.size+1, 1))
         plt.xlim([-1/2, maze.size-1/2])
