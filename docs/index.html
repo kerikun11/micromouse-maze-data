@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <title>MicroMouse Maze Viewer</title>
+  <!-- required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <!-- bootstrap -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <!-- src -->
+  <link rel="stylesheet" href="style.css" />
+  <script src="main.js" defer></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">MicroMouse Maze Viewer</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/kerikun11/micromouse-maze-data" target="blank">GitHub
+              Repository</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <main class="container my-5">
+    <section>
+      <h2 class="font-weight-light">概要</h2>
+      <p>
+        マイクロマウスの迷路ファイルを表示、編集、変換するWebアプリ。
+        <br />
+        ソースコード: <a href="https://github.com/kerikun11/micromouse-maze-data"
+          target="blank">kerikun11/micromouse-maze-data - GitHub</a>
+      </p>
+    </section>
+    <hr />
+    <section>
+      <h2 class="font-weight-light">迷路</h2>
+      <form>
+        <fieldset class="form-group">
+          <div class="row">
+            <legend class="col-form-label col-sm-3">ベースとなる迷路</legend>
+            <div class="col-sm-9">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputFile" />
+                <label class="custom-file-label" for="inputFile" data-browse="参照">
+                  ここをクリックまたはドラッグ&ドロップ
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+      <hr />
+      <pre id="maze-field" class="">
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+|                                                               |
++   +---+---+---+---+---+---+---+---+---+---+---+---+---+   +---+
+|                               |       |       |   |           |
++---+---+---+---+---+---+---+   +   +   +   +   +   +   +   +   +
+|               |       |       |   |       |           |   |   |
++   +---+---+   +   +   +   +   +   +---+   +---+   +---+---+   +
+|   |       |       |       |   |       |               |       |
++   +   +   +---+---+---+---+   +---+   +---+---+---+---+   +---+
+|   |   |   |   |   |   |       |       |       |       |       |
++   +   +   +   +   +   +   +---+   +---+   +   +   +   +---+   +
+|   |   |                   |       |       |       |       |   |
++   +   +---+   +   +   +---+   +---+   +---+---+---+---+   +   +
+|   |       |   |   |   |       |           |       |           |
++   +---+   +---+---+---+   +---+---+   +---+   +   +   +---+---+
+|                   |         G   G     |       |   |           |
++---+   +---+   +---+---+   +   +   +---+   +   +   +---+---+   +
+|                       |   | G   G |       |   |               |
++   +---+   +---+   +   +   +---+---+   +---+---+---+---+---+---+
+|                   |   |   |   |   |                           |
++---+   +---+   +   +   +---+   +   +---+---+---+---+---+---+   +
+|   |           |           |                   |       |       |
++   +---+   +   +   +---+   +   +---+   +   +   +   +   +   +---+
+|   |       |       |       |   |       |   |       |           |
++   +   +   +   +---+   +---+   +   +---+   +---+---+---+---+---+
+|       |       |       |       |   |           |       |       |
++   +   +   +---+   +---+   +---+   +---+   +   +   +   +   +   +
+|   |       |       |       |       |       |       |       |   |
++   +   +---+   +---+   +---+   +   +   +   +   +   +   +   +   +
+|           |                   |       |       |       |       |
++   +   +   +---+---+---+---+---+---+---+---+---+---+---+---+   +
+| S |   |                                                       |
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+</pre>
+      <hr />
+    </section>
+    <section>
+      <h2 class="font-weight-light">形式の変換</h2>
+      <p>
+        C言語の配列
+      </p>
+      <hr />
+      <pre id="maze-c-array-field">
+uint8_t map[16][16] = {
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+};
+</pre>
+      <hr />
+    </section>
+
+    <form>
+      <fieldset class="form-group">
+        <div class="row">
+          <legend class="col-form-label col-sm-2 pt-0">bit 順</legend>
+          <div class="col-sm-6">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="bit-order" id="bit-order-1" value="enws" checked>
+              <label class="form-check-label" for="bit-order-1">
+                0: 東, 1: 北, 2: 西, 3: 南
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="bit-order" id="bit-order-2" value="nesw">
+              <label class="form-check-label" for="bit-order-2">
+                0: 北, 1: 東, 2: 南, 3: 西
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-2 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">
+        &copy; 2021 KERI's Lab
+      </p>
+    </div>
+  </footer>
+
+  <!-- bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+  <!-- Optional JavaScript -->
+  <script type="text/javascript"></script>
+</body>
+
+</html>
