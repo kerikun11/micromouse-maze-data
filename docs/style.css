@@ -3,20 +3,29 @@
  * @date 2021.01.11
  */
 
-html
-{
-    background-color: gray;
-}
-
-#maze-field,
+#maze-text-field,
 #maze-c-array-field
 {
     font-size: x-small;
     line-height: normal;
     overflow: scroll;
+    padding: 0.5rem;
+  margin-bottom: 0;
 }
-#maze-field::-webkit-scrollbar,
+#maze-text-field::-webkit-scrollbar,
 #maze-c-array-field::-webkit-scrollbar
 {
     display:none;
+}
+
+td label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.table td, .table thead th{
+  padding-top: 0;
+  padding-bottom: 0;
 }

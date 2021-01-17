@@ -2,23 +2,25 @@
 <html lang="ja">
 
 <head>
-  <title>MicroMouse Maze Viewer</title>
   <!-- required meta tags -->
   <meta charset="utf-8" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
+  <meta name="description" content="MicroMouse Maze Viewer" />
+  <meta name="author" content="kerikun11" />
+
   <!-- bootstrap -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <!-- src -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/darkly/bootstrap.min.css"
+    integrity="sha384-nNK9n28pDUDDgIiIqZ/MiyO3F4/9vsMtReZK39klb/MtkZI3/LtjSjlmyVPS3KdN" crossorigin="anonymous">
+
+  <!-- user field -->
+  <title>MicroMouse Maze Viewer</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="main.js" defer></script>
+  <script src="main.js" type="module" defer></script>
 </head>
 
 <body>
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="#">MicroMouse Maze Viewer</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
@@ -39,34 +41,32 @@
   <!-- Page Content -->
   <main class="container my-5">
     <section>
-      <h2 class="font-weight-light">概要</h2>
+      <h4 class="font-weight-light">概要</h4>
       <p>
-        マイクロマウスの迷路ファイルを表示、編集、変換するWebアプリ。
+        マイクロマウスの迷路ファイルを表示、編集、変換するWebアプリ。(開発中)
         <br />
         ソースコード: <a href="https://github.com/kerikun11/micromouse-maze-data"
           target="blank">kerikun11/micromouse-maze-data - GitHub</a>
       </p>
     </section>
+
     <hr />
+
     <section>
-      <h2 class="font-weight-light">迷路</h2>
+      <h4 class="font-weight-light">迷路ファイルの選択</h4>
       <form>
         <fieldset class="form-group">
-          <div class="row">
-            <legend class="col-form-label col-sm-3">ベースとなる迷路</legend>
-            <div class="col-sm-9">
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" id="inputFile" />
-                <label class="custom-file-label" for="inputFile" data-browse="参照">
-                  ここをクリックまたはドラッグ&ドロップ
-                </label>
-              </div>
-            </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="inputFile" />
+            <label class="custom-file-label" for="inputFile" data-browse="参照">
+              ここをクリックまたはドラッグ&ドロップ
+            </label>
           </div>
         </fieldset>
       </form>
-      <hr />
-      <pre id="maze-field" class="">
+      <h4 class="font-weight-light">テキスト形式</h4>
+      <div class="alert alert-dark" role="alert">
+        <pre id="maze-text-field">
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 |                                                               |
 +   +---+---+---+---+---+---+---+---+---+---+---+---+---+   +---+
@@ -101,15 +101,71 @@
 | S |   |                                                       |
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 </pre>
-      <hr />
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="maze-text-copy-button">テキストをコピー</button>
+      <!-- <button type="button" class="btn btn-primary btn-sm" id="maze-text-save-button">迷路を保存</button> -->
     </section>
+
+    <hr />
+
+    </div>
     <section>
-      <h2 class="font-weight-light">形式の変換</h2>
-      <p>
-        C言語の配列
-      </p>
-      <hr />
-      <pre id="maze-c-array-field">
+      <h4 class="font-weight-light">C言語の配列形式</h4>
+      <table class="table table-responsive text-center">
+        <thead>
+          <tr>
+            <th>bit順</th>
+            <th>0 bit</th>
+            <th>1 bit</th>
+            <th>2 bit</th>
+            <th>3 bit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <form>
+            <tr>
+              <td>
+                <div class="radio">
+                  <label><input class="bit-order-input" type="radio" id='bit-order-1' name="bit-order" checked></label>
+                </div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-1'>東</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-1'>北</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-1'>西</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-1'>南</label></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="radio">
+                  <label><input class="bit-order-input" type="radio" id='bit-order-2' name="bit-order"></label>
+                </div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-2'>北</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-2'>東</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-2'>南</label></div>
+              </td>
+              <td>
+                <div class="radiotext"><label for='bit-order-2'>西</label></div>
+              </td>
+            </tr>
+          </form>
+        </tbody>
+      </table>
+      <div class="alert alert-dark" role="alert">
+        <pre id="maze-c-array-field">
 uint8_t map[16][16] = {
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -129,38 +185,17 @@ uint8_t map[16][16] = {
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 };
 </pre>
-      <hr />
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="maze-c-array-copy-button">テキストをコピー</button>
     </section>
-
-    <form>
-      <fieldset class="form-group">
-        <div class="row">
-          <legend class="col-form-label col-sm-2 pt-0">bit 順</legend>
-          <div class="col-sm-6">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="bit-order" id="bit-order-1" value="enws" checked>
-              <label class="form-check-label" for="bit-order-1">
-                0: 東, 1: 北, 2: 西, 3: 南
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="bit-order" id="bit-order-2" value="nesw">
-              <label class="form-check-label" for="bit-order-2">
-                0: 北, 1: 東, 2: 南, 3: 西
-              </label>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-    </form>
 
   </main>
 
   <!-- Footer -->
-  <footer class="py-2 bg-dark">
+  <footer class="py-2 navbar-dark bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">
-        &copy; 2021 KERI's Lab
+      <p class="m-2 text-center">
+        <a class="text-reset" href="https://kerikun11.github.io" target="blank">&copy; 2021 KERI's Lab</a>
       </p>
     </div>
   </footer>
