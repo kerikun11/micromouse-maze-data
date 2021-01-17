@@ -23,15 +23,21 @@ function update_c_array() {
 function get_maze_from_github() {
     let url = "https://api.github.com/repos/kerikun11/micromouse-maze-data/contents/data?ref=master";
     $.getJSON(url, function (data) {
-        // JSON result in `data` variable
+        for (let item of data) {
+            let option = document.createElement("option");
+            option.text = item["name"];
+            option.value = item["download_url"];
+            $("#maze-file-select-github").append(option);
+        }
     });
 }
 
 let maze_name = "maze_data";
+get_maze_from_github();
 update_c_array();
 
 /* 迷路ファイルが更新されたとき */
-$(".custom-file-input").on("change", function (evt) {
+$("#maze-file-select-upload").on("change", function (evt) {
     // ラベルにファイル名を表示する
     $(this).next(".custom-file-label").html($(this)[0].files[0].name);
     maze_name = $(this)[0].files[0].name.replaceAll(/[^\w_$]/ig, "_");
@@ -50,11 +56,27 @@ $(".custom-file-input").on("change", function (evt) {
     }
 });
 
+/* 迷路ファイルが更新されたとき */
+$("#maze-file-select-github").on("change", function (evt) {
+    // ラベルにファイル名を表示する
+    let url = $(this).val();
+    maze_name = url.split('/').reverse()[0].replaceAll(/[^\w_$]/ig, "_");
+    if (maze_name.match(/^[0-9]/)) maze_name = "_" + maze_name;
+    fetch(url).then(function (response) {
+        response.text().then(function (text) {
+            let maze = Maze.parse_maze_string(text);
+            document.getElementById("maze-text-field").innerText = maze.get_maze_string();
+            update_c_array();
+        });
+    });
+});
+
 /* ビット順のラジオボタンが更新されたとき */
 $(".bit-order-input").on("change", function (evt) {
     update_c_array();
 });
 
+/* コピーボタン */
 $("#maze-text-copy-button").on("click", function (evt) {
     let text = document.getElementById("maze-text-field").innerText;
     let area = document.createElement("textarea");
