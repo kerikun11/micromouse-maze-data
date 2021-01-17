@@ -3,18 +3,20 @@
  * @date 2021.01.11
  */
 
-.navbar .container{
+/* タイトルの横ズレを修正 */
+.navbar .container
+{
   padding-left: 15px;
   padding-right: 15px;
 }
 
+/* 迷路フィールドのスタイル */
 #maze-text-field,
 #maze-c-array-field
 {
   font-size: x-small;
   line-height: normal;
   overflow: scroll;
-  padding: 0.5rem;
   margin-bottom: 0;
 }
 #maze-text-field::-webkit-scrollbar,
@@ -22,12 +24,12 @@
 {
   display:none;
 }
-
 #maze-c-array-field
 {
   font-size: small;
 }
 
+/* 表のスタイル */
 td label
 {
   display: block;
@@ -35,13 +37,13 @@ td label
   height: 100%;
   margin-bottom: 0;
 }
-
 .table td, .table thead th
 {
   padding-top: 0;
   padding-bottom: 0;
 }
 
+/* 迷路選択フォームのスタイル */
 .input-group>.input-group-prepend {
     flex: 0 0 25%;
 }

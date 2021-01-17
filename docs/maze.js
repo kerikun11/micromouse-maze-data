@@ -122,7 +122,8 @@ export default class Maze {
                 if (this.is_wall(x, y, Maze.North)) hex += 1 << bit_order[1];
                 if (this.is_wall(x, y, Maze.West)) hex += 1 << bit_order[2];
                 if (this.is_wall(x, y, Maze.South)) hex += 1 << bit_order[3];
-                res += `0x${hex.toString(16)}, `;
+                res += `0x${hex.toString(16)}`;
+                if (x < s - 1) res += ", ";
             }
             res += "},\n";
         }
