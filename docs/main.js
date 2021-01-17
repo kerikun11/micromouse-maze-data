@@ -16,7 +16,8 @@ function update_c_array() {
     let bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-1").checked) bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-2").checked) bit_order = [1, 0, 3, 2];
-    let maze_c_array_string = maze.get_c_array_string({ name: maze_name, bit_order: bit_order });
+    let y_origin_is_top = document.getElementById("y-origin-is-top").checked;
+    let maze_c_array_string = maze.get_c_array_string({ name: maze_name, bit_order: bit_order, y_origin_is_top: y_origin_is_top });
     document.getElementById("maze-c-array-field").innerText = maze_c_array_string;
 }
 
@@ -75,6 +76,10 @@ $("#maze-file-select-github").on("change", function (evt) {
 $(".bit-order-input").on("change", function (evt) {
     update_c_array();
 });
+$("#y-origin-is-top").on("change", function (evt) {
+    update_c_array();
+});
+
 
 /* コピーボタン */
 $("#maze-text-copy-button").on("click", function (evt) {

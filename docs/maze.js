@@ -111,10 +111,18 @@ export default class Maze {
         }
         return res;
     }
-    get_c_array_string({ name = "maze_data", type = "const uint8_t", bit_order = [0, 1, 2, 3] } = {}) {
+    get_c_array_string({
+        name = "maze_data",
+        type = "const uint8_t",
+        bit_order = [0, 1, 2, 3],
+        y_origin_is_top = false,
+    } = {}) {
         let s = this.size;
-        let res = `${type} ${name}[${s}][${s}] = {\n`;
-        for (let y = s - 1; y >= 0; --y) {
+        let y_comment = y_origin_is_top ? "N-1-y" : "y";
+        let res = `${type} ${name}[ /* ${y_comment} */ ${s}][ /* x */ ${s}] = {\n`;
+        let y_array = [...Array(s).keys()]; // 0, 1, ... , s-1
+        if (y_origin_is_top) y_array = y_array.reverse();
+        for (let y of y_array) {
             res += "    {";
             for (let x = 0; x < s; ++x) {
                 let hex = 0;

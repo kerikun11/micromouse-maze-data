@@ -124,7 +124,7 @@
       <p>
         上記の迷路をC言語の配列形式で表示します。
       </p>
-      <table class="table table-responsive text-center">
+      <table class="table table-responsive text-center mb-2">
         <thead>
           <tr>
             <th>bit順</th>
@@ -177,6 +177,12 @@
           </form>
         </tbody>
       </table>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" value="true" id="y-origin-is-top">
+        <label class="form-check-label" for="y-origin-is-top">
+          迷路の左上を配列の左上に一致させる（上下を反転）
+        </label>
+      </div>
       <div class="alert alert-dark" role="alert">
         <pre id="maze-c-array-field">
 uint8_t map[16][16] = {
