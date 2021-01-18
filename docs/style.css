@@ -14,7 +14,7 @@
 #maze-text-field,
 #maze-c-array-field
 {
-  font-size: x-small;
+  font-size: small;
   line-height: normal;
   overflow: scroll;
   margin-bottom: 0;
@@ -24,9 +24,10 @@
 {
   display:none;
 }
-#maze-c-array-field
+#maze-text-field
 {
-  font-size: small;
+  font-size: x-small;
+  cursor: pointer;
 }
 
 /* 表のスタイル */

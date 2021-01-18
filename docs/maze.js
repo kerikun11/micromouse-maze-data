@@ -170,6 +170,18 @@ export default class Maze {
         }
         return maze;
     }
+    get_wall_index_from_maze_string_index(index) {
+        let s = this.size;
+        let y_span = (4 * s + 2) * 2;
+        let y = Math.floor(s - index / y_span);
+        let x = Math.floor(((index - 1) % (y_span / 2)) / 4);
+        let z = Math.floor(index / (y_span / 2) + 1) % 2;
+        if (z === 0 && Math.floor(index % (y_span / 2)) % 4 === 0)
+            return [x, y, Maze.East];
+        else if (z === 1 && Math.floor(index % (y_span / 2)) % 4 !== 0)
+            return [x, y, Maze.North];
+        return [-1, -1, Maze.East];
+    }
     toString() {
         let res = "";
         res += "size: " + this.size + "\n";

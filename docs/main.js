@@ -7,18 +7,42 @@
 
 import Maze from "./maze.js";
 
+let maze_name = "maze_data";
+let maze_string = document.getElementById("maze-text-field").innerText;
+let maze = Maze.parse_maze_string(maze_string);
+
 /**
  * @brief C言語の配列フィールドの内容を更新する関数
  */
 function update_c_array() {
-    let maze_string = document.getElementById("maze-text-field").innerText;
-    let maze = Maze.parse_maze_string(maze_string);
     let bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-1").checked) bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-2").checked) bit_order = [1, 0, 3, 2];
     let y_origin_is_top = document.getElementById("y-origin-is-top").checked;
     let maze_c_array_string = maze.get_c_array_string({ name: maze_name, bit_order: bit_order, y_origin_is_top: y_origin_is_top });
     document.getElementById("maze-c-array-field").innerText = maze_c_array_string;
+}
+
+function update_maze_text() {
+    let maze_text_field = document.getElementById("maze-text-field");
+    let maze_string = maze.get_maze_string();
+    maze_text_field.innerText = "";
+    for (let char of maze_string) {
+        let span = document.createElement('span');
+        span.innerText = char;
+        span.addEventListener('click', function () {
+            let position = 0;
+            let el = this;
+            while (el.previousSibling !== null) {
+                position++;
+                el = el.previousSibling;
+            }
+            let [x, y, d] = maze.get_wall_index_from_maze_string_index(position);
+            maze.update_wall(x, y, d, !maze.is_wall(x, y, d));
+            update_maze_text();
+        });
+        maze_text_field.appendChild(span);
+    }
 }
 
 function get_maze_from_github() {
@@ -33,8 +57,8 @@ function get_maze_from_github() {
     });
 }
 
-let maze_name = "maze_data";
 get_maze_from_github();
+update_maze_text();
 update_c_array();
 
 /* 迷路ファイルが更新されたとき */
@@ -44,15 +68,15 @@ $("#maze-file-select-upload").on("change", function (evt) {
     maze_name = $(this)[0].files[0].name.replaceAll(/[^\w_$]/ig, "_");
     if (maze_name.match(/^[0-9]/)) maze_name = "_" + maze_name;
     //FileReaderの作成
-    var reader = new FileReader();
+    let reader = new FileReader();
     //テキスト形式で読み込む
-    var file = evt.target.files;
+    let file = evt.target.files;
     reader.readAsText(file[0]);
     //読込終了後の処理
     reader.onload = function (ev) {
         //テキストエリアに表示する
-        let maze = Maze.parse_maze_string(reader.result);
-        document.getElementById("maze-text-field").innerText = maze.get_maze_string();
+        maze = Maze.parse_maze_string(reader.result);
+        update_maze_text();
         update_c_array();
     }
 });
@@ -65,8 +89,8 @@ $("#maze-file-select-github").on("change", function (evt) {
     if (maze_name.match(/^[0-9]/)) maze_name = "_" + maze_name;
     fetch(url).then(function (response) {
         response.text().then(function (text) {
-            let maze = Maze.parse_maze_string(text);
-            document.getElementById("maze-text-field").innerText = maze.get_maze_string();
+            maze = Maze.parse_maze_string(text);
+            update_maze_text();
             update_c_array();
         });
     });
@@ -82,23 +106,20 @@ $("#y-origin-is-top").on("change", function (evt) {
 
 
 /* コピーボタン */
-$("#maze-text-copy-button").on("click", function (evt) {
-    let text = document.getElementById("maze-text-field").innerText;
+function copy_text(id) {
+    let text = document.getElementById(id).innerText;
     let area = document.createElement("textarea");
     area.textContent = text;
     document.body.appendChild(area);
     area.select();
     document.execCommand("copy");
     document.body.removeChild(area);
+}
+$("#maze-text-copy-button").on("click", function (evt) {
+    copy_text("maze-text-field");
 });
 $("#maze-c-array-copy-button").on("click", function (evt) {
-    let text = document.getElementById("maze-c-array-field").innerText;
-    let area = document.createElement("textarea");
-    area.textContent = text;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    document.body.removeChild(area);
+    copy_text("maze-c-array-field");
 });
 
 
