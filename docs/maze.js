@@ -174,9 +174,10 @@ export default class Maze {
         let s = this.size;
         let y_span = (4 * s + 2) * 2;
         let y = Math.floor(s - index / y_span);
-        let x = Math.floor(((index - 1) % (y_span / 2)) / 4);
+        let x = Math.floor(((index - 1 - 1) % (y_span / 2)) / 4);
         let z = Math.floor(index / (y_span / 2) + 1) % 2;
-        if (z === 0 && Math.floor(index % (y_span / 2)) % 4 === 0)
+        console.log(x, y, z);
+        if (z === 0 && Math.floor((index) % (y_span / 2)) % 4 !== 2)
             return [x, y, Maze.East];
         else if (z === 1 && Math.floor(index % (y_span / 2)) % 4 !== 0)
             return [x, y, Maze.North];
