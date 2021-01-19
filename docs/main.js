@@ -7,10 +7,9 @@
 
 import Maze from "./maze.js";
 
-let maze_name = "default.maze";
-let maze_string = document.getElementById("maze-text-field").innerText;
-let maze = Maze.parse_maze_string(maze_string);
-
+/**
+  * @brief 迷路ファイル名をC言語の変数名に変換する関数
+  */
 function maze_name_escape(src) {
     let maze_name = src.replaceAll(/[^\w_$]/ig, "_");
     if (maze_name.match(/^[0-9]/)) maze_name = "_" + maze_name;
@@ -20,7 +19,7 @@ function maze_name_escape(src) {
 /**
  * @brief C言語の配列フィールドの内容を更新する関数
  */
-function update_c_array() {
+function update_c_array(maze, maze_name) {
     let bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-1").checked) bit_order = [0, 1, 2, 3];
     if (document.getElementById("bit-order-2").checked) bit_order = [1, 0, 3, 2];
@@ -31,7 +30,10 @@ function update_c_array() {
     document.getElementById("maze-c-array-field").innerText = maze_c_array_string;
 }
 
-function update_maze_text() {
+/**
+ * @brief 迷路テキストフィールドを更新する
+ */
+function update_maze_text(maze) {
     let maze_text_field = document.getElementById("maze-text-field");
     let maze_string = maze.get_maze_string();
     maze_text_field.innerText = "";
@@ -47,7 +49,7 @@ function update_maze_text() {
             }
             let [x, y, d] = maze.get_wall_index_from_maze_string_index(position);
             maze.update_wall(x, y, d, !maze.is_wall(x, y, d));
-            update_maze_text();
+            update_maze_text(maze);
         });
         maze_text_field.appendChild(span);
     }
@@ -65,9 +67,14 @@ function get_maze_from_github() {
     });
 }
 
+/* global variables */
+let maze_name = "default.maze";
+let maze_string = document.getElementById("maze-text-field").innerText;
+let maze = Maze.parse_maze_string(maze_string);
+
 get_maze_from_github();
-update_maze_text();
-update_c_array();
+update_maze_text(maze);
+update_c_array(maze, maze_name);
 
 /* 迷路ファイルが更新されたとき */
 $("#maze-file-select-upload").on("change", function (evt) {
@@ -83,8 +90,8 @@ $("#maze-file-select-upload").on("change", function (evt) {
     reader.onload = function (ev) {
         //テキストエリアに表示する
         maze = Maze.parse_maze_string(reader.result);
-        update_maze_text();
-        update_c_array();
+        update_maze_text(maze);
+        update_c_array(maze, maze_name);
     }
 });
 
@@ -96,20 +103,19 @@ $("#maze-file-select-github").on("change", function (evt) {
     fetch(url).then(function (response) {
         response.text().then(function (text) {
             maze = Maze.parse_maze_string(text);
-            update_maze_text();
-            update_c_array();
+            update_maze_text(maze);
+            update_c_array(maze, maze_name);
         });
     });
 });
 
 /* ビット順のラジオボタンが更新されたとき */
 $(".bit-order-input").on("change", function (evt) {
-    update_c_array();
+    update_c_array(maze, maze_name);
 });
 $("#y-origin-is-top").on("change", function (evt) {
-    update_c_array();
+    update_c_array(maze, maze_name);
 });
-
 
 /* コピーボタン */
 function copy_text(id) {
@@ -146,21 +152,3 @@ $("#maze-text-save-button").on("click", function (evt) {
     let maze_string = maze.get_maze_string();
     download(maze_string, maze_name, "text/plain");
 });
-
-// var maze = new Maze(4);
-// var maze = new Maze(4, [0, 0], [[2, 3], [1, 2]]);
-// maze.update_wall(0, 0, Maze.East, true);
-// maze.update_wall(0, 0, Maze.North, false);
-// maze.update_wall(0, 1, Maze.East, true);
-// maze.update_wall(0, 1, Maze.North, false);
-// maze.update_wall(0, 2, Maze.East, true);
-// maze.update_wall(0, 2, Maze.North, false);
-// maze.update_wall(0, 3, Maze.East, false);
-// maze.update_wall(1, 3, Maze.East, true);
-// maze.update_wall(1, 2, Maze.North, false);
-// var maze_string = maze.get_maze_string();
-// console.log(maze_string);
-// maze = Maze.parse_maze_string(maze_string)
-// console.log(maze.toString())
-// console.log(maze.get_maze_string())
-// console.log(maze.get_c_array_string())
