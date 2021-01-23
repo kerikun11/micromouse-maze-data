@@ -58,7 +58,7 @@ def get_maze_from_img(filepath, maze_size=None):
     # show(img)
 
     # 輪郭抽出
-    # 行の和，列の和をとる
+    # 行の和、列の和をとる
     sum_col = np.sum(img, axis=0)
     sum_row = np.sum(img, axis=1)
     # plt.figure()

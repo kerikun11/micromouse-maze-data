@@ -44,7 +44,7 @@
     <section>
       <h4 class="font-weight-light">概要</h4>
       <p>
-        マイクロマウスの迷路ファイルを表示、編集、変換するWebアプリ。(開発中)
+        マイクロマウスの迷路ファイルを表示、編集、変換するWebアプリ。
         <br />
         ソースコード: <a href="https://github.com/kerikun11/micromouse-maze-data"
           target="blank">kerikun11/micromouse-maze-data - GitHub</a>
@@ -58,20 +58,20 @@
       <p>下記のいずれかの方法で迷路を選択します。</p>
       <div class="input-group mb-2">
         <div class="input-group-prepend">
+          <label class="input-group-text" for="maze-file-select-github">GitHub Repository</label>
+        </div>
+        <select class="custom-select" id="maze-file-select-github">
+          <option selected>GitHub リポジトリの迷路データから選択</option>
+        </select>
+      </div>
+      <div class="input-group mb-4">
+        <div class="input-group-prepend">
           <span class="input-group-text">Upload Maze File</span>
         </div>
         <div class="custom-file">
           <input type="file" class="custom-file-input" id="maze-file-select-upload">
           <label class="custom-file-label" for="maze-file-select-upload">Choose Maze File</label>
         </div>
-      </div>
-      <div class="input-group mb-4">
-        <div class="input-group-prepend">
-          <label class="input-group-text" for="maze-file-select-github">GitHub Repository</label>
-        </div>
-        <select class="custom-select" id="maze-file-select-github">
-          <option selected>GitHub リポジトリの迷路データから選択</option>
-        </select>
       </div>
 
       <h4 class="font-weight-light">テキスト形式</h4>
