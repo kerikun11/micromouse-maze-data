@@ -31,7 +31,7 @@ function update_c_array(maze, maze_name) {
 }
 
 /**
- * @brief 迷路テキストフィールドを更新する
+ * @brief 迷路テキストフィールドを更新する関数
  */
 function update_maze_text(maze) {
     let maze_text_field = document.getElementById("maze-text-field");
@@ -40,6 +40,7 @@ function update_maze_text(maze) {
     for (let char of maze_string) {
         let span = document.createElement('span');
         span.innerText = char;
+        /* クリックで壁の有無を切り替えるイベントを追加する */
         span.addEventListener('click', function () {
             let position = 0;
             let el = this;
@@ -50,11 +51,15 @@ function update_maze_text(maze) {
             let [x, y, d] = maze.get_wall_index_from_maze_string_index(position);
             maze.update_wall(x, y, d, !maze.is_wall(x, y, d));
             update_maze_text(maze);
+            update_c_array(maze, maze_name);
         });
         maze_text_field.appendChild(span);
     }
 }
 
+/**
+ * @brief GitHub から過去の迷路データを取得する関数
+ */
 function get_maze_from_github() {
     let url = "https://api.github.com/repos/kerikun11/micromouse-maze-data/contents/data?ref=master";
     $.getJSON(url, function (data) {
@@ -72,6 +77,7 @@ let maze_name = "default.maze";
 let maze_string = document.getElementById("maze-text-field").innerText;
 let maze = Maze.parse_maze_string(maze_string);
 
+/* 各フィールドの初期化 */
 get_maze_from_github();
 update_maze_text(maze);
 update_c_array(maze, maze_name);
