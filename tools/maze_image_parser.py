@@ -50,7 +50,7 @@ def get_maze_from_img(filepath, maze_size=None):
     # show(img)
 
     # ノイズ除去
-    w = 4
+    w = 6
     kernel = np.ones((w, w), np.uint8)
     img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
     img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
