@@ -50,12 +50,13 @@ def get_maze_from_img(filepath, maze_size=None):
     # show(img)
 
     # ノイズ除去
+    w = 5
+    kernel = np.ones((w, w), np.uint8)
+    img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel, iterations=1)
     w = 6
     kernel = np.ones((w, w), np.uint8)
-    img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-    img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-    img = cv2.dilate(img, kernel, iterations=2)
-    # show(img)
+    img = cv2.dilate(img, kernel, iterations=1)
+    # show(img), plt.show(), exit()
 
     # 輪郭抽出
     # 行の和、列の和をとる
@@ -65,6 +66,7 @@ def get_maze_from_img(filepath, maze_size=None):
     # plt.plot(sum_col)
     # plt.figure()
     # plt.plot(sum_row)
+    # plt.show()
     # 和を半分に分割する
     sl, sr = np.array_split(np.sum(img, axis=0), 2)
     st, sb = np.array_split(np.sum(img, axis=1), 2)
@@ -91,7 +93,8 @@ def get_maze_from_img(filepath, maze_size=None):
         sum_col = sum_col < np.average(sum_col)
         diff_col = np.append(sum_col, 0) - np.append(0, sum_col)
         maze_size = sum(diff_col > 0)
-    print('maze size: ', maze_size)
+    maze_size = int(maze_size)
+    print('maze size:', maze_size)
 
     # 迷路オブジェクトの作成
     maze = Maze(maze_size)
@@ -144,9 +147,10 @@ if __name__ == "__main__":
 
     # set filepath
     filepath = sys.argv[1]
+    maze_size = sys.argv[2] if len(sys.argv>=2) else None # option
 
     # parse
-    maze = get_maze_from_img(filepath)
+    maze = get_maze_from_img(filepath, maze_size)
 
     # 表示
     print(maze.get_maze_string())
