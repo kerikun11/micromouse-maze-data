@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     # set filepath
     filepath = sys.argv[1]
-    maze_size = sys.argv[2] if len(sys.argv>=2) else None # option
+    maze_size = sys.argv[2] if len(sys.argv)>=2 else None # option
 
     # parse
     maze = get_maze_from_img(filepath, maze_size)
